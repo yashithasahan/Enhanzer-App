@@ -1,4 +1,5 @@
 import 'package:enhanzer/services/database_services.dart';
+import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
 class HomeController {
@@ -20,5 +21,9 @@ class HomeController {
 
   Future<void> initDatabase() async {
     await _databaseService.initDatabase();
+  }
+
+  void logout() async {
+    await _databaseService.clearUserData();
   }
 }

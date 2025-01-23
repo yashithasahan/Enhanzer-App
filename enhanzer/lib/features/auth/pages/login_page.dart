@@ -188,20 +188,34 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text;
+
+    // Validate fields
+    if (username.isEmpty) {
+      _showErrorSnackbar('Username or Email cannot be empty');
+      return;
+    }
+    if (password.isEmpty) {
+      _showErrorSnackbar('Password cannot be empty');
+      return;
+    }
+    if (!_isValidEmail(username)) {
+      _showErrorSnackbar('Invalid Email format');
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
-    final username = _usernameController.text.trim();
-    final password = _passwordController.text;
-
-    final isSuccess = await AuthController.login(username, password);
+    final result = await AuthController.login(username, password);
 
     setState(() {
       _isLoading = false;
     });
 
-    if (isSuccess) {
+    if (result['success']) {
       // Navigate to Home Page
       Navigator.pushReplacement(
         context,
@@ -209,32 +223,43 @@ class _LoginPageState extends State<LoginPage> {
       );
     } else {
       // Show error Snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: const [
-              Icon(
-                Icons.error,
-                color: Colors.white,
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Invalid username or password',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.redAccent,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+      _showErrorSnackbar(result['message'] ?? 'Invalid username or password');
     }
+  }
+
+  bool _isValidEmail(String email) {
+    // Basic email validation regex
+    const emailRegex =
+        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+    return RegExp(emailRegex).hasMatch(email);
+  }
+
+  void _showErrorSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(
+              Icons.error,
+              color: Colors.white,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 }

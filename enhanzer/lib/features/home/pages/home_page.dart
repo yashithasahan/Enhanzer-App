@@ -1,3 +1,4 @@
+import 'package:enhanzer/features/auth/pages/login_page.dart';
 import 'package:enhanzer/features/home/controllers/home_controller.dart';
 import 'package:enhanzer/services/database_services.dart';
 import 'package:flutter/cupertino.dart';
@@ -123,6 +124,17 @@ class _HomePageState extends State<HomePage> {
             leading: const Icon(Icons.settings, color: Color(0xFF5D3FD3)),
             title: const Text('Settings'),
             onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.exit_to_app, color: Color(0xFF5D3FD3)),
+            title: const Text('LogOut'),
+            onTap: () {
+              _homeController.logout();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginPage()),
+              );
+            },
           ),
         ],
       ),

@@ -1,4 +1,6 @@
 import 'package:enhanzer/features/auth/pages/login_page.dart';
+import 'package:enhanzer/features/home/pages/home_page.dart';
+import 'package:enhanzer/services/database_services.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,6 +14,7 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
+  final DatabaseService _databaseService = DatabaseService();
 
   @override
   void initState() {
@@ -27,15 +30,28 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.easeInOut,
     );
 
-    // Start the animation
     _animationController.forward();
+    _checkLoginStatus();
+  }
 
-    // Navigate to the login page after a delay
+  Future<void> _checkLoginStatus() async {
+    await _databaseService.initDatabase();
+    final users = await _databaseService.fetchUser();
+
     Future.delayed(const Duration(seconds: 1), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginPage()),
-      );
+      if (users.isNotEmpty) {
+        // User is already logged in
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } else {
+        // No user found, redirect to login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      }
     });
   }
 

@@ -51,4 +51,9 @@ class DatabaseService {
 
     await database.close();
   }
+
+  Future<void> clearUserData() async {
+    await _database.delete('user');
+    Logger().i("User data cleared successfully");
+  }
 }
