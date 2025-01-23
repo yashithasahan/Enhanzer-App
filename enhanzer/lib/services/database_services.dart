@@ -13,7 +13,7 @@ class DatabaseService {
       onCreate: (db, version) {
         return db.execute('''
           CREATE TABLE user (
-            id TEXT PRIMARY KEY AUTOINCREMENT,
+            id TEXT PRIMARY KEY NOT NULL,
             name TEXT,
             email TEXT
           )
